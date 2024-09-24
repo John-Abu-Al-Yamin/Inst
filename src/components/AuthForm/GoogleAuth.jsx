@@ -22,9 +22,15 @@ const GoogleAuth = ({ prefix }) => {
         return;
       }
 
-const userRef = doc(firestore, "users", newUser.user.uid);
-const userSnap = await getDoc(userRef);
-      if (newUser) {
+      const userRef = doc(firestore, "users", newUser.user.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        //Login
+        const userDoc = userSnap.data();
+        localStorage.setItem("user-info", JSON.stringify(userDoc));
+        loginUser(userDoc);
+      } else {
+        //Signup
         const userDoc = {
           uid: newUser.user.uid,
           email: newUser.user.email,
@@ -53,7 +59,8 @@ const userSnap = await getDoc(userRef);
         alignItems={"center"}
         justifyContent={"center"}
         cursor={"pointer"}
-        onClick={handelGoogleAuth}      >
+        onClick={handelGoogleAuth}
+      >
         <Image src="./google.png" alt="Google Logo" w={5} />
         <Text mx={2} color={"blue.300"}>
           {prefix} with Google
