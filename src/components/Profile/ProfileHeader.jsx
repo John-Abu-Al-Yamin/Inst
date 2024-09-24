@@ -4,11 +4,31 @@ import {
   Button,
   Flex,
   Text,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
+import userProfileStore from "../../store/userProfileStore";
+import useAuthStore from "../../store/authStore";
+import EditProfile from "./EditProfile";
 
 const ProfileHeader = () => {
+  const { userProfile } = userProfileStore();
+
+  console.log(`userProfile`, userProfile);
+
+  const authUser = useAuthStore((state) => state.user);
+
+  const visitingOwnProfileAndAuth =
+    authUser && authUser.username === userProfile?.username;
+
+  const visitingAnotherProfileAndAuth =
+    authUser && authUser.username !== userProfile?.username;
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
+
+
   return (
     <Flex
       gap={{ base: 4, sm: 10 }}
@@ -21,7 +41,11 @@ const ProfileHeader = () => {
         alignSelf={"flex-start"}
         mx={"auto"}
       >
-        <Avatar name="john" src="./profilepic.png" alt="profile" />
+        <Avatar
+          name={userProfile?.username}
+          src={userProfile?.profilePicURL}
+          alt="profile"
+        />
       </AvatarGroup>
       <VStack alignItems={"start"} gap={2} mx={"auto"} flex={1}>
         <Flex
@@ -31,47 +55,67 @@ const ProfileHeader = () => {
           alignItems={"center"}
           w={"full"}
         >
-          <Text fontSize={{ base: "sm", sm: "lg" }}> John Abou-Al-Yamin_</Text>
-          <Flex gap={4} alignItems={"center"} justifyContent={"center"}>
-            <Button
-              bg={"white"}
-              color={"black"}
-              _hover={{ bg: "whiteAlpha.800" }}
-              size={{ base: "xs", md: "sm" }}
-            >
-              Edite Profile
-            </Button>
-          </Flex>
+          <Text fontSize={{ base: "sm", sm: "lg" }}>
+            {userProfile?.username}
+          </Text>
+
+          {visitingOwnProfileAndAuth && (
+            <Flex gap={4} alignItems={"center"} justifyContent={"center"}>
+              <Button
+                bg={"white"}
+                color={"black"}
+                _hover={{ bg: "whiteAlpha.800" }}
+                size={{ base: "xs", md: "sm" }}
+
+                onClick={onOpen}
+              >
+                Edite Profile
+              </Button>
+            </Flex>
+          )}
+
+          {visitingAnotherProfileAndAuth && (
+            <Flex gap={4} alignItems={"center"} justifyContent={"center"}>
+              <Button
+                bg={"blue.500"}
+                color={"white"}
+                _hover={{ bg: "blue.600" }}
+                size={{ base: "xs", md: "sm" }}
+
+              >
+                Follow
+              </Button>
+            </Flex>
+          )}
         </Flex>
         <Flex alignItems={"center"} gap={{ base: 2, sm: 4 }}>
           <Text fontSize={{ base: "xs", sm: "sm" }}>
             <Text as="span" fontWeight={"bold"} mr={1}>
-              4
+              {userProfile?.posts.length}
             </Text>
             Posts
           </Text>
           <Text fontSize={{ base: "xs", sm: "sm" }}>
             <Text as="span" fontWeight={"bold"} mr={1}>
-              7890
+              {userProfile?.followers.length}
             </Text>
             Followers
           </Text>
           <Text fontSize={{ base: "xs", sm: "sm" }}>
             <Text as="span" fontWeight={"bold"} mr={1}>
-              540
+              {userProfile?.following.length}
             </Text>
             Following
           </Text>
         </Flex>
         <Flex alignItems={"center"} gap={4}>
           <Text fontSize={"sm"} fontWeight={"bold"}>
-            John Abou-Al-Yamin
+            {userProfile?.fullName}
           </Text>
         </Flex>
-        <Text fontSize={"sm"}>
-          Tutorials that are meant to level up your skills as John
-        </Text>
+        <Text fontSize={"sm"}>{userProfile?.bio || "No Bio"}</Text>
       </VStack>
+      {isOpen && <EditProfile isOpen={isOpen} onClose={onClose} />}
     </Flex>
   );
 };
