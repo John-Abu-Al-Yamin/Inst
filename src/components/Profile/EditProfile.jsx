@@ -18,6 +18,8 @@ import {
 import { useRef, useState } from "react";
 import useAuthStore from "../../store/authStore";
 import usePreviewimg from "../../hooks/usePreviewimg";
+import useEditeProfile from "../../hooks/useEditeProfile";
+import useShowToast from "../../hooks/useShowToast";
 
 const EditProfile = ({ isOpen, onClose }) => {
   const [input, setinput] = useState({
@@ -26,13 +28,21 @@ const EditProfile = ({ isOpen, onClose }) => {
     bio: "",
   });
 
+  const showToast = useShowToast();
   const fileRef = useRef();
 
+  const { selectedFile, setSelectedFile, handleImageChange } = usePreviewimg();
 
-  const { selectedFile, setSelectedFile, handleImageChange } = usePreviewimg()
+  const { editeProfile, isUploading } = useEditeProfile();
 
-  const handelEditProfile = () => {
-    console.log(input);
+  const handelEditProfile = async () => {
+    try {
+      await editeProfile(input, selectedFile);
+      setSelectedFile(null);
+      onClose();
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
   };
 
   const authUser = useAuthStore((state) => state.user);
@@ -66,12 +76,23 @@ const EditProfile = ({ isOpen, onClose }) => {
                 <FormControl>
                   <Stack direction={["column", "row"]} spacing={6}>
                     <Center>
-                      <Avatar size="xl" src={selectedFile || authUser?.profilePicURL} border={"2px solid white "} />
+                      <Avatar
+                        size="xl"
+                        src={selectedFile || authUser?.profilePicURL}
+                        border={"2px solid white "}
+                      />
                     </Center>
                     <Center w="full">
-                      <Button w="full" onClick={() => fileRef.current.click()}>Edit Profile Picture</Button>
+                      <Button w="full" onClick={() => fileRef.current.click()}>
+                        Edit Profile Picture
+                      </Button>
                     </Center>
-                    <Input type={"file"} hidden ref={fileRef} onChange={handleImageChange}/>
+                    <Input
+                      type={"file"}
+                      hidden
+                      ref={fileRef}
+                      onChange={handleImageChange}
+                    />
                   </Stack>
                 </FormControl>
 
@@ -82,7 +103,9 @@ const EditProfile = ({ isOpen, onClose }) => {
                     size={"sm"}
                     type={"text"}
                     value={input.fullName || authUser?.fullName}
-                    onChange={(e) => setinput({ ...input, fullName: e.target.value })}
+                    onChange={(e) =>
+                      setinput({ ...input, fullName: e.target.value })
+                    }
                   />
                 </FormControl>
 
@@ -105,8 +128,10 @@ const EditProfile = ({ isOpen, onClose }) => {
                     placeholder={"Bio"}
                     size={"sm"}
                     type={"text"}
-                    value={input.bio || authUser?.bio}
-                    onChange={(e) => setinput({ ...input, bio: e.target.value })}
+                    value={input.bio || authUser?.bio }
+                    onChange={(e) =>
+                      setinput({ ...input, bio: e.target.value })
+                    }
                   />
                 </FormControl>
 
@@ -127,6 +152,7 @@ const EditProfile = ({ isOpen, onClose }) => {
                     size="sm"
                     w="full"
                     _hover={{ bg: "blue.500" }}
+                    isLoading={isUploading}
                     onClick={handelEditProfile}
                   >
                     Submit

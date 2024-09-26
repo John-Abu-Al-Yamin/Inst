@@ -4,39 +4,14 @@ import { Link as RouterLink } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import {
-  CreatePostLogo,
   InstagramLogo,
   InstagramMobileLogo,
-  NotificationsLogo,
-  SearchLogo,
+
 } from "../../assets/contants";
 import useLogout from "../../hooks/useLogout";
+import SidebarItems from "./SidebarItems";
 
 const Sidebar = () => {
-  const sidebarItems = [
-    {
-      icon: <AiFillHome size={25} />,
-      text: "Home",
-      link: "/",
-    },
-    {
-      icon: <SearchLogo />,
-      text: "Search",
-    },
-    {
-      icon: <NotificationsLogo />,
-      text: "Notifications",
-    },
-    {
-      icon: <CreatePostLogo />,
-      text: "Create",
-    },
-    {
-      icon: <Avatar size={"sm"} name="John" src="./profilepic.png" />,
-      text: "Profile",
-      link: "/assprorammer",
-    },
-  ];
 
   const { handelLogout, isLoggingOut } = useLogout();
   return (
@@ -79,33 +54,7 @@ const Sidebar = () => {
         </Link>
 
         <Flex direction={"column"} gap={5} cursor={"pointer"} flex={1}>
-          {sidebarItems.map((item, index) => (
-            <Tooltip
-              label={item.text}
-              key={index}
-              hasArrow
-              placement="right"
-              openDelay={300}
-              display={{ base: "block", md: "none" }}
-            >
-              <Link
-                display={"flex"}
-                alignItems={"center"}
-                gap={4}
-                justifyContent={{ base: "center", md: "flex-start" }}
-                as={RouterLink}
-                to={item.link || "null"}
-                p={2}
-                borderRadius={6}
-                _hover={{ bg: "whiteAlpha.400" }}
-                w={{ base: "10", md: "full" }}
-                aria-label={item.text}
-              >
-                {item.icon}
-                <Box display={{ base: "none", md: "block" }}>{item.text}</Box>
-              </Link>
-            </Tooltip>
-          ))}
+          <SidebarItems/>
 
           {/* Logout Button */}
           <Tooltip
