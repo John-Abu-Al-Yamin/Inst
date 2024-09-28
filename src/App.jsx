@@ -13,7 +13,7 @@ function App() {
   const [authUser] = useAuthState(auth);
 
 
-  console.log(authUser)
+  // console.log(authUser)
   return (
     <>
       <PageLayout>

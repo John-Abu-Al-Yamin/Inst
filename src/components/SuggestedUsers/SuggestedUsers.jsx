@@ -3,31 +3,39 @@ import React from "react";
 import SuggestedHeader from "./SuggestedHeader";
 import SuggestedUser from "./SuggestedUser";
 import { Link as RouterLink } from "react-router-dom";
+import useGetSuggestedUsers from "../../hooks/useGetSuggestedUsers";
 
 const SuggestedUsers = () => {
+  const { suggestedUsers, isLoading } = useGetSuggestedUsers();
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
   return (
     <VStack py={8} px={6} gap={4}>
       <SuggestedHeader />
 
-      <Flex alignItems={"center"} justifyContent={"space-between"} w={"full"}>
-        <Text fontSize={12} fontWeight={"bold"} color={"gray.500"}>
-          Suggested for you
-        </Text>
-        <Text
-          fontSize={12}
-          fontWeight={"bold"}
-          _hover={{ color: "gray.400" }}
-          cursor={"pointer"}
-        >
-          See All
-        </Text>
-      </Flex>
-      <SuggestedUser name="John Doe" followers={1000}  avatar="https://bit.ly/ryan-florence"/>
-      <SuggestedUser name="Jan Abou-Al-Yamin" followers={800}  avatar="https://bit.ly/dan-abramov"/>
-      <SuggestedUser name="Joo Emad" followers={678}  avatar="https://bit.ly/code-beast"/>
-     
+      {suggestedUsers?.length !== 0 && (
+        <Flex alignItems={"center"} justifyContent={"space-between"} w={"full"}>
+          <Text fontSize={12} fontWeight={"bold"} color={"gray.500"}>
+            Suggested for you
+          </Text>
+          <Text
+            fontSize={12}
+            fontWeight={"bold"}
+            _hover={{ color: "gray.400" }}
+            cursor={"pointer"}
+          >
+            See All
+          </Text>
+        </Flex>
+      )}
+      {suggestedUsers?.map((user) => (
+        <SuggestedUser key={user.id} user={user} />
+      ))}
+
       <Box fontSize={12} color={"gray.500"} mt={5} alignSelf={"start"}>
-        © 2023 Built By{" "}
+        © 2024 Built By{" "}
         <Link
           href="https://github.com/assprorammer"
           target="_blank"
@@ -35,7 +43,7 @@ const SuggestedUsers = () => {
           color={"blue.500"}
           fontSize={14}
         >
-          AS a Prorammer
+          AS a John Abou-Al-Yamin
         </Link>
       </Box>
     </VStack>

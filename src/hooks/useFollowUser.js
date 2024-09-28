@@ -29,41 +29,26 @@ const useFollowUser = (userId) => {
           : arrayUnion(authUser.uid),
       });
 
-      if (isFollowing) {
-        // unfollow
-        setAuthUser({
-          ...authUser,
-          following: authUser.following.filter((uid) => uid !== userId),
-        });
+      const updatedAuthUser = {
+        ...authUser,
+        following: isFollowing
+          ? authUser.following.filter((uid) => uid !== userId)
+          : [...authUser.following, userId],
+      };
+      setAuthUser(updatedAuthUser);
+      localStorage.setItem("user-info", JSON.stringify(updatedAuthUser));
 
-        setUserProfile({
+      if (userProfile) {
+        const updatedUserProfile = {
           ...userProfile,
-          followers: userProfile.followers.filter(
-            (uid) => uid !== authUser.uid
-          ),
-        });
-        localStorage.setItem("user-info", JSON.stringify(authUser));
-        setIsFollowing(false);
-      } else {
-        // follow
-        setAuthUser({
-          ...authUser,
-          following: [...authUser.following, userId],
-        });
-        setUserProfile({
-          ...userProfile,
-          followers: [...userProfile.followers, authUser.uid],
-        });
-        localStorage.setItem(
-          "user-info",
-          JSON.stringify({
-            ...authUser,
-            following: [...authUser.following, userId],
-          })
-        );
-        setIsFollowing(true);
-        
+          followers: isFollowing
+            ? userProfile.followers.filter((uid) => uid !== authUser.uid)
+            : [...userProfile.followers, authUser.uid],
+        };
+        setUserProfile(updatedUserProfile);
       }
+
+      setIsFollowing(!isFollowing);
     } catch (error) {
       showToast("Error", error.message, "error");
     } finally {
@@ -74,11 +59,11 @@ const useFollowUser = (userId) => {
   useEffect(() => {
     if (authUser) {
       const isFollowing = authUser.following.includes(userId);
-
       setIsFollowing(isFollowing);
     }
   }, [authUser, userId]);
 
   return { handelFollowUser, isFollowing, isUpdated };
 };
+
 export default useFollowUser;

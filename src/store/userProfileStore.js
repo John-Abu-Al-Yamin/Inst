@@ -1,12 +1,24 @@
-import React from 'react'
 
-import { create } from 'zustand'
+import { create } from "zustand";
 
 const userProfileStore = create((set) => ({
   userProfile: null,
   setUserProfile: (userProfile) => set({ userProfile }),
-  // add Post
-  
-}))
+  // this is for adding post
+  addPost: (post) =>
+		set((state) => ({
+			userProfile: { ...state.userProfile, posts: [post.id, ...state.userProfile.posts] },
+		})),
 
-export default userProfileStore
+    deletePost: (postId) =>
+      set((state) => ({
+        userProfile: {
+          ...state.userProfile,
+          posts: state.userProfile.posts.filter((id) => id !== postId),
+        },
+      })),
+  
+
+}));
+
+export default userProfileStore;
